@@ -7,7 +7,7 @@ http://errtheblog.com/posts/60-sake-bomb
 http://dev.rubyonrails.org/browser/trunk/railties/lib/tasks/databases.rake
 END
 namespace :db do
-	task :shell => :environment do
+  task :shell => :environment do
     config = ActiveRecord::Base.configurations[(RAILS_ENV or "development")]
     command = ""
     case config["adapter"]
@@ -23,9 +23,10 @@ namespace :db do
     else
       (command << "echo Unsupported database adapter: #{config["adapter"]}")
     end
-		system(command)
-	end
+    system(command)
+  end
 end
+
 
 desc %q@
 Freezes Rails to edge, or a specific revision, with symlinks etc
@@ -45,47 +46,47 @@ Add this to your Capistrano script (config/deploy.rb):
   end
 @
 namespace 'deploy' do
-	task :edge do
-		ENV['SHARED_PATH']  = '../../shared' unless ENV['SHARED_PATH']
-		ENV['RAILS_PATH'] ||= File.join(ENV['SHARED_PATH'], 'rails')
-		ENV['REPO_BRANCH'] ||= 'trunk'
-		
-		checkout_path = File.join(ENV['RAILS_PATH'], 'trunk')
-		export_path   = "#{ENV['RAILS_PATH']}/rev_#{ENV['REVISION']}"
-		symlink_path  = 'vendor/rails'
+  task :edge do
+    ENV['SHARED_PATH']  = '../../shared' unless ENV['SHARED_PATH']
+    ENV['RAILS_PATH'] ||= File.join(ENV['SHARED_PATH'], 'rails')
+    ENV['REPO_BRANCH'] ||= 'trunk'
+    
+    checkout_path = File.join(ENV['RAILS_PATH'], 'trunk')
+    export_path   = "#{ENV['RAILS_PATH']}/rev_#{ENV['REVISION']}"
+    symlink_path  = 'vendor/rails'
 
-		# do we need to checkout the file?
-		unless File.exists?(checkout_path)
-			puts 'setting up rails trunk'    
-			get_framework_for checkout_path do |framework|
-				system "svn co http://dev.rubyonrails.org/svn/rails/#{ENV['REPO_BRANCH']}/#{framework}/lib #{checkout_path}/#{framework}/lib --quiet"
-			end
-		end
+    # do we need to checkout the file?
+    unless File.exists?(checkout_path)
+      puts 'setting up rails trunk'    
+      get_framework_for checkout_path do |framework|
+        system "svn co http://dev.rubyonrails.org/svn/rails/#{ENV['REPO_BRANCH']}/#{framework}/lib #{checkout_path}/#{framework}/lib --quiet"
+      end
+    end
 
-		# do we need to export the revision?
-		unless File.exists?(export_path)
-			puts "setting up rails rev #{ENV['REVISION']}"
-			get_framework_for export_path do |framework|
-				system "svn up #{checkout_path}/#{framework}/lib -r #{ENV['REVISION']} --quiet"
-				system "svn export #{checkout_path}/#{framework}/lib #{export_path}/#{framework}/lib"
-			end
-		end
+    # do we need to export the revision?
+    unless File.exists?(export_path)
+      puts "setting up rails rev #{ENV['REVISION']}"
+      get_framework_for export_path do |framework|
+        system "svn up #{checkout_path}/#{framework}/lib -r #{ENV['REVISION']} --quiet"
+        system "svn export #{checkout_path}/#{framework}/lib #{export_path}/#{framework}/lib"
+      end
+    end
 
-		puts 'linking rails'
-		rm_rf   symlink_path
-		mkdir_p symlink_path
+    puts 'linking rails'
+    rm_rf   symlink_path
+    mkdir_p symlink_path
 
-		get_framework_for symlink_path do |framework|
-			ln_s File.expand_path("#{export_path}/#{framework}/lib"), "#{symlink_path}/#{framework}/lib"
-		end
-		
-		touch "vendor/rails_#{ENV['REVISION']}"
-	end
+    get_framework_for symlink_path do |framework|
+      ln_s File.expand_path("#{export_path}/#{framework}/lib"), "#{symlink_path}/#{framework}/lib"
+    end
+    
+    touch "vendor/rails_#{ENV['REVISION']}"
+  end
 
-	def get_framework_for(*paths)
-		%w( railties actionpack activerecord actionmailer activesupport activeresource actionwebservice ).each do |framework|
-			paths.each { |path| mkdir_p "#{path}/#{framework}" }
-			yield framework
-		end
-	end
+  def get_framework_for(*paths)
+    %w( railties actionpack activerecord actionmailer activesupport activeresource actionwebservice ).each do |framework|
+      paths.each { |path| mkdir_p "#{path}/#{framework}" }
+      yield framework
+    end
+  end
 end
