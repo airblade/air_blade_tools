@@ -1,3 +1,32 @@
+desc <<END
+Start a MySQL shell using the credentials in database.yml.
+Sake did this but one day Sake stopped working.  Strangely
+Rails' databases.rake omits this task.
+
+http://errtheblog.com/posts/60-sake-bomb
+http://dev.rubyonrails.org/browser/trunk/railties/lib/tasks/databases.rake
+END
+namespace :db do
+	task :shell => :environment do
+    config = ActiveRecord::Base.configurations[(RAILS_ENV or "development")]
+    command = ""
+    case config["adapter"]
+    when "mysql" then
+      (command << "mysql ")
+      (command << "--host=#{(config["host"] or "localhost")} ")
+      (command << "--port=#{(config["port"] or 3306)} ")
+      (command << "--user=#{(config["username"] or "root")} ")
+      (command << "--password=#{(config["password"] or "")} ")
+      (command << config["database"])
+    when "postgresql" then
+      puts("You should consider switching to MySQL or get off your butt and submit a patch")
+    else
+      (command << "echo Unsupported database adapter: #{config["adapter"]}")
+    end
+		system(command)
+	end
+end
+
 desc %q@
 Freezes Rails to edge, or a specific revision, with symlinks etc
 as described by Mike Clark (see the Cadillac section):
