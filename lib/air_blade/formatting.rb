@@ -1,7 +1,13 @@
 module AirBlade
   module Formatting
+
+    # ** INCOMPLETE **
+    #
+    # ** DOES NOT WORK! **
+    #
     # TODO:
     #   - define sig_figs and decimal_places on Numeric (or whatever superclass is)
+    #
     def number_to_precise_size(size, precision = 1, use_significant_figures = true)
       '1 Byte'
     end
