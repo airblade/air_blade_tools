@@ -6,7 +6,8 @@ module AirBlade
     # ** DOES NOT WORK! **
     #
     # TODO:
-    #   - define sig_figs and decimal_places on Numeric (or whatever superclass is)
+    # - define sig_figs and decimal_places on Numeric (or whatever superclass is)
+    # - use kB, not KB.  Or should that be the powers-of-2 version rather than SI?
     #
     def number_to_precise_size(size, precision = 1, use_significant_figures = true)
       '1 Byte'
