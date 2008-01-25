@@ -1,12 +1,13 @@
-desc <<END
-Start a MySQL shell using the credentials in database.yml.
-Sake did this but one day Sake stopped working.  Strangely
-Rails' databases.rake omits this task.
-
-http://errtheblog.com/posts/60-sake-bomb
-http://dev.rubyonrails.org/browser/trunk/railties/lib/tasks/databases.rake
-END
 namespace :db do
+
+  desc <<-END
+  Start a MySQL shell using the credentials in database.yml.
+  Sake did this but one day Sake stopped working.  Strangely
+  Rails' databases.rake omits this task.
+
+  http://errtheblog.com/posts/60-sake-bomb
+  http://dev.rubyonrails.org/browser/trunk/railties/lib/tasks/databases.rake
+  END
   task :shell => :environment do
     config = ActiveRecord::Base.configurations[(RAILS_ENV or "development")]
     command = ""
@@ -25,6 +26,24 @@ namespace :db do
     end
     system(command)
   end
+
+  namespace :fixtures do
+    desc <<-END
+    Loads basic data into the current environment's database.  Load specific fixtures using FIXTURES=x,y.
+
+    This differs from db:fixtures:load by loading fixtures in the db/basic_data directory rather than text/fixtures.  Basic data, a.k.a. reference data, and test data serve different purposes and should not be conflated.
+
+    This is a better way to load basic data than within migrations because migrations are not guaranteed to run through from start to finish.  The recommended way to create a new database with the current structure is via db/schema.rb.  So if we cannot rely on the migrations, we should not use them to load basic data.
+    END
+    task :basic_data => :environment do
+      require 'active_record/fixtures'
+      ActiveRecord::Base.establish_connection(RAILS_ENV.to_sym)
+      (ENV['FIXTURES'] ? ENV['FIXTURES'].split(/,/) : Dir.glob(File.join(RAILS_ROOT, 'db', 'basic_data', '*.{yml,csv}'))).each do |fixture_file|
+        Fixtures.create_fixtures('db/basic_data', File.basename(fixture_file, '.*'))
+      end
+    end
+  end
+    
 end
 
 
