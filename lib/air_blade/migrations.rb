@@ -5,7 +5,7 @@ require 'active_support'
 # * Foreign Key Migrations plugin, by RedHill Consulting
 #   http://www.redhillonrails.org/foreign_key_migrations.html
 module AirBlade
-  module MigrationHelper
+  module Migrations
 
     module SchemaStatements
       # Sets a foreign key constraint.
@@ -40,7 +40,7 @@ module AirBlade
       def create_table_with_storing_name(table_name, options = {}, &block)
         @@table_name = table_name
         create_table_without_storing_name table_name, options, &block
-        AirBlade::MigrationHelper::SchemaDefinitions.foreign_keys = []
+        AirBlade::Migrations::SchemaDefinitions.foreign_keys = []
       end
     end
 
@@ -79,7 +79,7 @@ module AirBlade
       end
 
       def foreign_key_constraint(from_column, to_table)
-        from_table = AirBlade::MigrationHelper::SchemaStatements.table_name
+        from_table = AirBlade::Migrations::SchemaStatements.table_name
         %(constraint #{constraint_name(from_table, from_column)}
           foreign key (#{from_column})
           references #{to_table}(id))
