@@ -3,4 +3,8 @@
 ActionController::Base.send :include, AirBlade::HelperHelper
 ActionController::Base.send :include, AirBlade::LayoutHelper
 ActionController::Base.send :protected, :pan_helper
-ActiveRecord::Migration.send :include, AirBlade::MigrationHelper
+
+# Foreign key constraints.
+ActiveRecord::Migration.send :extend, AirBlade::MigrationHelper::SchemaStatements
+ActiveRecord::ConnectionAdapters::TableDefinition.send :include, AirBlade::MigrationHelper::SchemaDefinitions
+ActiveRecord::ConnectionAdapters::SchemaStatements.send :include, AirBlade::MigrationHelper::SchemaStatements
