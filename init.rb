@@ -3,4 +3,4 @@
 ActionController::Base.send :include, AirBlade::HelperHelper
 ActionController::Base.send :include, AirBlade::LayoutHelper
 ActionController::Base.send :protected, :pan_helper
-ActiveRecord::Migration.send :include AirBlade::MigrationHelper
+ActiveRecord::Migration.send :include, AirBlade::MigrationHelper
