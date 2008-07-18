@@ -11,17 +11,13 @@ module AirBlade
       # Sets a foreign key constraint.
       # Use in a migration where you might use +add_index+.
       def add_foreign_key(from_table, from_column, to_table)
-        execute %(alter table #{from_table}
-                  add constraint #{constraint_name(from_table, from_column)}
-                  foreign key (#{from_column})
-                  references #{to_table}(id))
+        execute %(alter table #{from_table} add constraint #{constraint_name(from_table, from_column)} foreign key (#{from_column}) references #{to_table}(id))
       end
 
       # Drops a foreign key constraint.
       # Use in a migration where you might use +add_index+.
       def drop_foreign_key(from_table, from_column)
-        execute %(alter table #{from_table}
-                  drop foreign key #{constraint_name(from_table, from_column)})
+        execute %(alter table #{from_table} drop foreign key #{constraint_name(from_table, from_column)})
       end
 
       def constraint_name(table, column)
@@ -80,9 +76,7 @@ module AirBlade
 
       def foreign_key_constraint(from_column, to_table)
         from_table = AirBlade::Migrations::SchemaStatements.table_name
-        %(constraint #{constraint_name(from_table, from_column)}
-          foreign key (#{from_column})
-          references #{to_table}(id))
+        %(constraint #{constraint_name(from_table, from_column)} foreign key (#{from_column}) references #{to_table}(id))
       end
 
       def constraint_name(table, column)
