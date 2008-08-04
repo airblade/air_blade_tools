@@ -12,7 +12,7 @@ module AirBlade
     end
 
     def foreign_key_constraint(from_table, from_column, to_table = nil)
-      to_table ||= from_column.to_s[/^(.+)_id$/, 1].pluralize
+      to_table ||= from_column.to_s[/^(.+)_id$/, 1].tableize
       [ "constraint #{constraint_name from_table, from_column}",
         "foreign key (#{from_column})",
         "references #{to_table}(id)"
