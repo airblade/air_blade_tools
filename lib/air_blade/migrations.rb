@@ -15,7 +15,7 @@ module AirBlade
       to_table ||= from_column.to_s[/^(.+)_id$/, 1].tableize
       [ "constraint #{constraint_name from_table, from_column}",
         "foreign key (#{from_column})",
-        "references #{to_table}(id)"
+        "references #{quote_table_name to_table}(id)"
       ].join(' ')
     end
 
@@ -43,15 +43,15 @@ module AirBlade
       # Sets a foreign key constraint.
       # Use in a migration where you might use +add_index+.
       def add_foreign_key(from_table, from_column, to_table = nil)
-        execute [ "alter table #{from_table}",
-                  "add #{foreign_key_constraint from_table, from_column}"
+        execute [ "alter table #{quote_table_name from_table}",
+                  "add #{foreign_key_constraint from_table, from_column, to_table}"
         ].join(' ')
       end
 
       # Drops a foreign key constraint.
       # Use in a migration where you might use +add_index+.
       def drop_foreign_key(from_table, from_column)
-        execute [ "alter table #{from_table}",
+        execute [ "alter table #{quote_table_name from_table}",
                   "drop foreign key #{constraint_name from_table, from_column}"
         ].join(' ')
       end
