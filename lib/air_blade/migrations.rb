@@ -11,12 +11,30 @@ module AirBlade
       "fk_#{table}_#{column}"
     end
 
-    def foreign_key_constraint(from_table, from_column, to_table = nil)
-      to_table ||= from_column.to_s[/^(.+)_id$/, 1].tableize
-      [ "constraint #{constraint_name from_table, from_column}",
-        "foreign key (#{from_column})",
-        "references #{quote_table_name to_table}(id)"
-      ].join(' ')
+    # Options:
+    #  :to_table
+    #  :on_delete => :cascade | :nullify | :restrict (default)
+    #  :on_update => :cascade | :nullify | :restrict
+    #
+    # Note :ondelete => :nullify only works if foreign key column in question can be null.
+    def foreign_key_constraint(from_table, from_column, options = {})
+      to_table = options[:to_table] || from_column.to_s[/^(.+)_id$/, 1].tableize
+      on_delete = case options[:on_delete]
+                  when :cascade; 'cascade'
+                  when :nullify; 'set null'
+                  end
+      on_update = case options[:on_update]
+                  when :cascade;  'cascade'
+                  when :nullify;  'set null'
+                  when :restrict; 'restrict'
+                  end
+      cmd = [ "constraint #{constraint_name from_table, from_column}",
+              "foreign key (#{from_column})",
+              "references #{quote_table_name to_table}(id)",
+      ]
+      cmd << "on delete #{on_delete}" if on_delete
+      cmd << "on update #{on_update}" if on_update
+      cmd.join(' ')
     end
 
 
@@ -42,9 +60,9 @@ module AirBlade
 
       # Sets a foreign key constraint.
       # Use in a migration where you might use +add_index+.
-      def add_foreign_key(from_table, from_column, to_table = nil)
+      def add_foreign_key(from_table, from_column, options = {})
         execute [ "alter table #{quote_table_name from_table}",
-                  "add #{foreign_key_constraint from_table, from_column, to_table}"
+                  "add #{foreign_key_constraint from_table, from_column, options}"
         ].join(' ')
       end
 
@@ -80,11 +98,11 @@ module AirBlade
         references_without_foreign_key *args
 
         # Now we discard any options.
-        args.extract_options!  
+        options = args.extract_options!  
 
         unless polymorphic
           args.each do |column|
-            @@foreign_keys << "#{column}_id"
+            @@foreign_keys << ["#{column}_id", options]
           end
         end
       end
@@ -92,7 +110,7 @@ module AirBlade
       # Writes out the foreign key constraints after writing out the table definition.
       def to_sql_with_foreign_keys
         from_table = AirBlade::Migrations::SchemaStatements.table_name
-        fks = @@foreign_keys.map{ |column| foreign_key_constraint from_table, column }
+        fks = @@foreign_keys.map{ |column, options| foreign_key_constraint from_table, column, options }
         [ to_sql_without_foreign_keys, fks ].reject{ |x| x.blank? }.join ', '
       end
     end
