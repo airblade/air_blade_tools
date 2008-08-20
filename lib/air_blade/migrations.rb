@@ -30,7 +30,7 @@ module AirBlade
                   end
       cmd = [ "constraint #{constraint_name from_table, from_column}",
               "foreign key (#{from_column})",
-              "references #{quote_table_name to_table}(id)",
+              "references #{ActiveRecord::Base.connection.quote_table_name to_table}(id)",
       ]
       cmd << "on delete #{on_delete}" if on_delete
       cmd << "on update #{on_update}" if on_update
