@@ -4,19 +4,19 @@ namespace :rails do
     desc 'Renames deprecated view extensions, e.g. foo.rhtml => foo.html.erb'
     task :views do
       Dir.glob('app/views/**/[^_]*.rhtml').each do |file|
-        puts `svn mv #{file} #{file.gsub(/\.rhtml$/, '.html.erb')}`
+        puts `git mv #{file} #{file.gsub(/\.rhtml$/, '.html.erb')}`
       end
 
       Dir.glob('app/views/**/[^_]*.rjs').each do |file|
-        puts `svn mv #{file} #{file.gsub(/\.rjs$/, '.js.rjs')}`
+        puts `git mv #{file} #{file.gsub(/\.rjs$/, '.js.rjs')}`
       end
 
       Dir.glob('app/views/**/[^_]*.rxml').each do |file|
-        puts `svn mv #{file} #{file.gsub(/\.rxml$/, '.xml.builder')}`
+        puts `git mv #{file} #{file.gsub(/\.rxml$/, '.xml.builder')}`
       end
 
       Dir.glob('app/views/**/[^_]*.haml').each do |file|
-        puts `svn mv #{file} #{file.gsub(/\.haml$/, '.html.haml')}`
+        puts `git mv #{file} #{file.gsub(/\.haml$/, '.html.haml')}`
       end
     end
 
