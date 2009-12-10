@@ -3,7 +3,7 @@ namespace :rails do
 
     desc 'Renames deprecated view extensions, e.g. foo.rhtml => foo.html.erb'
     task :views do
-      Dir.glob('app/views/**/[^_]*.rhtml').each do |file|
+      Dir.glob('app/views/**/*.rhtml').each do |file|
         puts `git mv #{file} #{file.gsub(/\.rhtml$/, '.html.erb')}`
       end
 
