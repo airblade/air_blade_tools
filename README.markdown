@@ -1,8 +1,6 @@
 AirBlade Tools
 ==============
 
-A small, growing collection of helpers, rake tasks and so on that I use on most projects.
-
-Please send feedback to boss@airbladesoftware.com.
+Actually this is just one tool: a plugin which adds foreign key support to migrations in Rails 2.x.
 
 Copyright (c) 2008 Andrew Stewart, released under the MIT license.
